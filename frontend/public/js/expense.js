@@ -5,6 +5,7 @@ const desc = document.querySelector("#desc");
 const cat = document.querySelector("#category");
 const msg = document.querySelector(".msg");
 const expenseList = document.querySelector("#expenses");
+const rzpBtn = document.querySelector("#rzp-button");
 
 //retrieving token from local storage
 const token = localStorage.getItem("token");
@@ -16,6 +17,8 @@ if (!token) {
 console.log(token);
 axios.defaults.headers.common["Authorization"] = `${token}`;
 
+// listen to click on rzpBtn
+rzpBtn.addEventListener("click", payments);
 // Listen for form submit
 myForm.addEventListener("submit", onSubmit);
 
@@ -129,3 +132,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.log(err);
   }
 });
+
+//payments function implementation
+async function payments(e) {
+  const response = await axios.get(
+    "http://localhost:3000/purchase/premiummembership"
+  );
+  console.log(response);
+  var options = {
+    key: response.data.key_id,
+    order_id: response.data.order.id,
+    handler: async function (response) {
+      axios.post("http://localhost:3000/purchase/updatetransactionstatus", {
+        order_id: options.order_id,
+        payment_id: response.razorpay_payment_id,
+      });
+      alert("you are a premium user now");
+    },
+  };
+  const rzpl = new Razorpay(options);
+  rzpl.open();
+  e.preventDefault();
+
+  rzpl.on("payment.failed", function (response) {
+    console.log(response);
+    alert("Something went wrong");
+  });
+}
