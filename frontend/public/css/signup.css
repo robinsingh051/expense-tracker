@@ -81,3 +81,10 @@ header {
   padding: 5px;
   margin: 5px;
 }
+
+.sucess {
+  background: green;
+  color: white;
+  padding: 5px;
+  margin: 5px;
+}

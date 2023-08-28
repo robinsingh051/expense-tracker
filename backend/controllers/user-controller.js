@@ -19,3 +19,9 @@ exports.postUsers = async (req, res, next) => {
       .json({ error: "User with this email already exists" });
   }
 };
+
+exports.getUser = async (req, res, next) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  console.log(email, password);
+};
