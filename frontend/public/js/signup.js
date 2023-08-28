@@ -46,12 +46,7 @@ async function onSubmit(e) {
       nameInput.value = "";
       emailInput.value = "";
       passwordInput.value = "";
-      msg.classList.add("success");
-      msg.textContent = "User Signed In successfully";
-      setTimeout(() => {
-        msg.textContent = "";
-        msg.classList.remove("success");
-      }, 2000);
+      window.location.href = "login.html";
     } catch (err) {
       msg.classList.add("error");
       msg.textContent = "User Already exists";

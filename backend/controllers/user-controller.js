@@ -1,4 +1,6 @@
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const secretKey = "yourSecretKey";
 
 const User = require("../models/user");
 
@@ -38,10 +40,14 @@ exports.getUser = async (req, res, next) => {
       return res
         .status(401)
         .json({ error: "Incorrect password", success: false });
-    } else
-      return res
-        .status(200)
-        .json({ message: "User logged in successfully", success: true });
+    } else {
+      const token = jwt.sign(user.id, secretKey);
+      return res.status(200).json({
+        message: "User logged in successfully",
+        success: true,
+        token: token,
+      });
+    }
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "An error occurred" });

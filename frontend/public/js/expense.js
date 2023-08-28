@@ -6,6 +6,16 @@ const cat = document.querySelector("#category");
 const msg = document.querySelector(".msg");
 const expenseList = document.querySelector("#expenses");
 
+//retrieving token from local storage
+const token = localStorage.getItem("token");
+
+//user not logged in
+if (!token) {
+  window.location.href = "login.html";
+}
+console.log(token);
+axios.defaults.headers.common["Authorization"] = `${token}`;
+
 // Listen for form submit
 myForm.addEventListener("submit", onSubmit);
 
@@ -27,13 +37,11 @@ async function onSubmit(e) {
         desc: desc.value,
         cat: cat.value,
       };
-
       const response = await axios.post(
         "http://localhost:3000/expenses",
         newDetails
       );
-
-      console.log(response);
+      console.log(response.data);
       showData(response.data);
 
       // Clear fields

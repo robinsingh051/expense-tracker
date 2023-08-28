@@ -37,6 +37,9 @@ async function onSubmit(e) {
       );
       console.log(response.data);
 
+      //storing token to local storage
+      localStorage.setItem("token", response.data.token);
+
       // Clear fields
       emailInput.value = "";
       passwordInput.value = "";
