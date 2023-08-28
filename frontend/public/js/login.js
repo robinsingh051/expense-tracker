@@ -40,12 +40,7 @@ async function onSubmit(e) {
       // Clear fields
       emailInput.value = "";
       passwordInput.value = "";
-      msg.classList.add("success");
-      msg.textContent = "User Logged In successfully";
-      setTimeout(() => {
-        msg.textContent = "";
-        msg.classList.remove("success");
-      }, 2000);
+      window.location.href = "expense.html";
     } catch (err) {
       if (err.response.status === 404) {
         msg.classList.add("error");
