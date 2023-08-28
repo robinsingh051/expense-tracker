@@ -41,16 +41,19 @@ async function onSubmit(e) {
         "http://localhost:3000/users/login",
         newDetails
       );
-
-      console.log(response);
+      console.log(response.data);
+      // Clear fields
+      nameInput.value = "";
+      emailInput.value = "";
+      passwordInput.value = "";
     } catch (err) {
-      console.error(err);
+      msg.classList.add("error");
+      msg.textContent = "User Already exists";
+      setTimeout(() => {
+        msg.textContent = "";
+        msg.remove();
+      }, 2000);
     }
-
-    // Clear fields
-    nameInput.value = "";
-    emailInput.value = "";
-    passwordInput.value = "";
   }
 }
 
