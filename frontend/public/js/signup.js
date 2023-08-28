@@ -38,19 +38,22 @@ async function onSubmit(e) {
     try {
       // post to backend using axios
       const response = await axios.post(
-        "http://localhost:3000/users/login",
+        "http://localhost:3000/users/signUp",
         newDetails
       );
-
-      console.log(response);
+      console.log(response.data);
+      // Clear fields
+      nameInput.value = "";
+      emailInput.value = "";
+      passwordInput.value = "";
     } catch (err) {
-      console.error(err);
+      msg.classList.add("error");
+      msg.textContent = "User already exists";
+      setTimeout(() => {
+        msg.textContent = "";
+        msg.remove();
+      }, 2000);
     }
-
-    // Clear fields
-    nameInput.value = "";
-    emailInput.value = "";
-    passwordInput.value = "";
   }
 }
 
