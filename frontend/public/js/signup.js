@@ -23,7 +23,7 @@ async function onSubmit(e) {
     msg.textContent = "Please enter all fields";
     setTimeout(() => {
       msg.textContent = "";
-      msg.remove();
+      msg.classList.remove("error");
     }, 2000);
   } else {
     // Create new details object
@@ -46,12 +46,18 @@ async function onSubmit(e) {
       nameInput.value = "";
       emailInput.value = "";
       passwordInput.value = "";
+      msg.classList.add("success");
+      msg.textContent = "User Signed In successfully";
+      setTimeout(() => {
+        msg.textContent = "";
+        msg.classList.remove("success");
+      }, 2000);
     } catch (err) {
       msg.classList.add("error");
       msg.textContent = "User Already exists";
       setTimeout(() => {
         msg.textContent = "";
-        msg.remove();
+        msg.classList.remove("error");
       }, 2000);
     }
   }

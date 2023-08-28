@@ -1,15 +1,19 @@
+const bcrypt = require("bcrypt");
+
 const User = require("../models/user");
 
 exports.postUsers = async (req, res, next) => {
   const name = req.body.name;
   const email = req.body.email;
   const password = req.body.password;
-  console.log(name, email);
+  console.log(name, email, password);
+
   try {
+    const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await User.create({
       name: name,
       email: email,
-      password: password,
+      password: hashedPassword,
     });
     res.status(201).json(newUser);
   } catch (err) {
@@ -27,12 +31,17 @@ exports.getUser = async (req, res, next) => {
   try {
     const user = await User.findOne({ where: { email } });
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ error: "User not found", success: false });
     }
-    if (user.password !== password) {
-      return res.status(401).json({ error: "Incorrect password" });
+    const passwordMatched = await bcrypt.compare(password, user.password);
+    if (!passwordMatched) {
+      return res
+        .status(401)
+        .json({ error: "Incorrect password", success: false });
     } else
-      return res.status(200).json({ message: "User logged in successfully" });
+      return res
+        .status(200)
+        .json({ message: "User logged in successfully", success: true });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "An error occurred" });
