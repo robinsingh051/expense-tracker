@@ -9,7 +9,7 @@ const router = express.Router();
 // /users/signUp => POST
 router.post("/signUp", userController.postUsers);
 
-// users/logIn => GET
-router.get("/logIn", userController.getUser);
+// users/logIn => POST
+router.post("/logIn", userController.getUser);
 
 module.exports = router;

@@ -18,7 +18,7 @@ async function onSubmit(e) {
     msg.textContent = "Please enter all fields";
     setTimeout(() => {
       msg.textContent = "";
-      msg.remove();
+      msg.classList.remove("error");
     }, 2000);
   } else {
     // Create new details object
@@ -31,7 +31,7 @@ async function onSubmit(e) {
 
     try {
       // post to backend using axios
-      const response = await axios.get(
+      const response = await axios.post(
         "http://localhost:3000/users/logIn",
         userDetails
       );
@@ -44,7 +44,7 @@ async function onSubmit(e) {
       msg.textContent = "User Logged In successfully";
       setTimeout(() => {
         msg.textContent = "";
-        msg.remove();
+        msg.classList.remove("success");
       }, 2000);
     } catch (err) {
       if (err.response.status === 404) {
@@ -56,7 +56,7 @@ async function onSubmit(e) {
       }
       setTimeout(() => {
         msg.textContent = "";
-        msg.remove();
+        msg.classList.remove("error");
       }, 2000);
     }
   }
