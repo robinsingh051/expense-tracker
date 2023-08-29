@@ -30,9 +30,7 @@ async function onSubmit(e) {
         newDetails
       );
       console.log(response.data);
-      // Clear fields
-      emailInput.value = "";
-      //   window.location.href = "login.html";
+      alert("Password Reset link is sent to given email id");
     } catch (err) {
       console.log(err);
     }

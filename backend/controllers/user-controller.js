@@ -4,6 +4,7 @@ const secretKey = "yourSecretKey";
 const nodemailer = require("nodemailer");
 
 const User = require("../models/user");
+const ForgetPasswordRequest = require("../models/forgetpasswordrequest");
 const sequelize = require("../util/database");
 
 exports.postUsers = async (req, res, next) => {
@@ -66,35 +67,40 @@ exports.getUser = async (req, res, next) => {
 exports.forgetpassword = async (req, res, next) => {
   const email = req.body.email;
   console.log(email);
-  const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
-    auth: {
-      user: "baskin.notif@gmail.com",
-      pass: "kgjtkdyobgffnqjg",
-      authMethod: "LOGIN",
-    },
-  });
-  const mailConfirm = {
-    from: "baskin.notif@gmail.com",
-    to: email,
-    subject: "Change your password",
-    html: `
-      <html>
-        <head>
-        </head>
-        <body>
-          <p>He He He</p>
-        </body>
-      </html>  `,
-  };
-  transporter.sendMail(mailConfirm, (err, info) => {
-    if (err) {
-      console.log(err);
-      res.status(400).json({ message: "failed" });
-    } else {
-      res.status(200).json({ message: "success" });
-    }
-  });
+  try {
+    const user = await User.findOne({ where: { email: email } });
+    const forgetpasswordrequest = await ForgetPasswordRequest.create({
+      userId: user.id,
+    });
+    const uuid = forgetpasswordrequest.id;
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: "baskin.notif@gmail.com",
+        pass: "kgjtkdyobgffnqjg",
+        authMethod: "LOGIN",
+      },
+    });
+    const mailConfirm = {
+      from: "baskin.notif@gmail.com",
+      to: email,
+      subject: "Change your password using given link",
+      html: `
+        <html>
+          <head>
+          </head>
+          <body>
+            <p>http://localhost:3000/password/resestpassword/${uuid}</p>
+          </body>
+        </html>  `,
+    };
+    const info = await transporter.sendMail(mailConfirm);
+    console.log(info);
+    res.status(200).json({ message: "success" });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: "failed" });
+  }
 };
