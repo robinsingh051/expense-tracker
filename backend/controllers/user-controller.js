@@ -104,3 +104,5 @@ exports.forgetpassword = async (req, res, next) => {
     res.status(400).json({ message: "failed" });
   }
 };
+
+exports.dowload = async (req, res, next) => {};

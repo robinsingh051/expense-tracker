@@ -9,6 +9,7 @@ const premiumUser = document.querySelector("#premiumUser");
 const rzpBtn = document.querySelector("#rzp-button");
 const logoutBtn = document.querySelector("#logoutBtn");
 const divForleaderboardBtn = document.querySelector(".mr-3");
+const downloadBtn = document.querySelector("#downloadexpense");
 
 //retrieving token from local storage
 const token = localStorage.getItem("token");
@@ -36,6 +37,7 @@ async function getPremiumStatus() {
     // remove buy premium button
     rzpBtn.remove();
   } catch (err) {
+    downloadBtn.remove();
     premiumUser.innerHTML = "";
   }
 }
@@ -235,4 +237,22 @@ function showLeaderBoard(leaderBoardList, userExpense) {
     )
   );
   leaderBoardList.appendChild(li);
+}
+
+async function download() {
+  try {
+    const response = await axios.get("http://localhost:3000/user/download");
+    if (response.status === 201) {
+      // The backend is sending a download link
+      // which if we open in the browser, the file would download
+      const a = document.createElement("a");
+      a.href = response.data.fileUrl;
+      a.download = "myexpense.csv";
+      a.click();
+    } else {
+      throw new Error(response.data.message);
+    }
+  } catch (err) {
+    console.log(err);
+  }
 }
