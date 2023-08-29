@@ -76,19 +76,7 @@ exports.checkPremium = async (req, res, next) => {
 
 exports.getLeaderBoard = async (req, res, next) => {
   try {
-    const expenses = await Expense.findAll({
-      attributes: [
-        [sequelize.fn("SUM", sequelize.col("expense")), "totalExpenses"],
-        "userId",
-      ],
-      include: [
-        {
-          model: User,
-          attributes: ["name"],
-        },
-      ],
-      group: ["userId"],
-    });
+    const expenses = await User.findAll();
     res.status(200).json(expenses);
   } catch (err) {
     console.error(err);

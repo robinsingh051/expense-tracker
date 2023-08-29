@@ -9,7 +9,6 @@ const premiumUser = document.querySelector("#premiumUser");
 const rzpBtn = document.querySelector("#rzp-button");
 const logoutBtn = document.querySelector("#logoutBtn");
 const divForleaderboardBtn = document.querySelector(".mr-3");
-const leaderBoardList = document.querySelector("#leaderBoard");
 
 //retrieving token from local storage
 const token = localStorage.getItem("token");
@@ -34,6 +33,8 @@ async function getPremiumStatus() {
 
     // Append the button after premiumUser element
     divForleaderboardBtn.appendChild(leaderBoardBtn);
+    // remove buy premium button
+    rzpBtn.remove();
   } catch (err) {
     premiumUser.innerHTML = "";
   }
@@ -177,6 +178,7 @@ async function payments(e) {
       );
       alert("you are a premium user now");
       premiumUser.innerHTML = "<span>You are premium user now</span>";
+      getPremiumStatus();
     },
     modal: {
       ondismiss: async function () {
@@ -216,21 +218,21 @@ async function leaderBoard() {
     );
     const userExpenses = response.data;
     console.log(userExpenses);
+    const leaderBoardList = document.querySelector("#leaderBoard");
+    leaderBoardList.innerHTML = "";
     for (let i = 0; i < userExpenses.length; i++)
-      showLeaderBoard(userExpenses[i]);
+      showLeaderBoard(leaderBoardList, userExpenses[i]);
   } catch (error) {
     console.error("Error fetching user expenses:", error);
   }
 }
 
-function showLeaderBoard(userExpense) {
+function showLeaderBoard(leaderBoardList, userExpense) {
   const li = document.createElement("li");
   li.appendChild(
     document.createTextNode(
-      `Name - ${userExpense.user.name} -- Total Expenses - ${userExpense.totalExpenses}`
+      `Name - ${userExpense.name} -- Total Expenses - ${userExpense.totalExpense}`
     )
   );
   leaderBoardList.appendChild(li);
-
-  expenseList.appendChild(li);
 }

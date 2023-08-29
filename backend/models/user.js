@@ -20,6 +20,7 @@ const User = sequelize.define("user", {
     allowNull: false,
   },
   ispremium: Sequelize.BOOLEAN,
+  totalExpense: Sequelize.INTEGER,
 });
 
 module.exports = User;

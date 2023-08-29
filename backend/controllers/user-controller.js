@@ -16,6 +16,8 @@ exports.postUsers = async (req, res, next) => {
       name: name,
       email: email,
       password: hashedPassword,
+      totalExpense: 0,
+      ispremium: false,
     });
     res.status(201).json(newUser);
   } catch (err) {

@@ -30,7 +30,7 @@ Order.belongsTo(User);
 
 // Sync the database models
 sequelize
-  .sync()
+  .sync({ force: true })
   .then(() => {
     // Start the server
     app.listen(3000);

@@ -23,6 +23,8 @@ exports.postExpenses = async (req, res, next) => {
       desc: desc,
       cat: cat,
     });
+    req.user.totalExpense += parseInt(expense);
+    await req.user.save();
     console.log(newExpense.id);
     res.status(201).json(newExpense.get());
   } catch (err) {
@@ -44,6 +46,8 @@ exports.deleteExpense = async (req, res, next) => {
   const expenseId = req.params.id;
   try {
     const expenses = await req.user.getExpenses({ where: { id: expenseId } });
+    req.user.totalExpense -= expenses[0].expense;
+    await req.user.save();
     await expenses[0].destroy();
     res.status(204).json({ success: "Expense is deleted" });
   } catch (err) {
