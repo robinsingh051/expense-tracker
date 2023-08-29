@@ -32,6 +32,7 @@ exports.purchasePremium = async (req, res, next) => {
 };
 
 exports.updatetransactionstatus = async (req, res, next) => {
+  const t = await sequelize.transaction();
   try {
     const orders = await req.user.getOrders({
       where: { orderid: req.body.order_id },
@@ -39,29 +40,34 @@ exports.updatetransactionstatus = async (req, res, next) => {
     const order = orders[0];
     order.paymentid = req.body.payment_id;
     order.status = "SUCCESS";
-    order.save();
+    order.save({ transaction: t });
     req.user.ispremium = true;
-    req.user.save();
+    req.user.save({ transaction: t });
+    await t.commit();
     res.status(200).json({ message: "paymant successful" });
   } catch (err) {
     console.log(err);
+    await t.rollback();
     res.status(403).json({ message: "Something went wrong", error: err });
   }
 };
 
 exports.failedtransactionstatus = async (req, res, next) => {
+  const t = await sequelize.transaction();
   try {
     const orders = await req.user.getOrders({
       where: { orderid: req.body.order_id },
     });
     const order = orders[0];
     order.status = "FAILED";
-    order.save();
-    req.user.ispremium = true;
-    req.user.save();
+    order.save({ transaction: t });
+    req.user.ispremium = false;
+    req.user.save({ transaction: t });
+    await t.commit();
     res.status(400).json({ message: "payment failed" });
   } catch (err) {
     console.log(err);
+    await t.rollback();
     res.status(403).json({ message: "Something went wrong", error: err });
   }
 };
