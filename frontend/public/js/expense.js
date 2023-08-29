@@ -5,11 +5,14 @@ const desc = document.querySelector("#desc");
 const cat = document.querySelector("#category");
 const msg = document.querySelector(".msg");
 const expenseList = document.querySelector("#expenses");
+const premiumUser = document.querySelector("#premiumUser");
 const rzpBtn = document.querySelector("#rzp-button");
+const logoutBtn = document.querySelector("#logoutBtn");
+const divForleaderboardBtn = document.querySelector(".mr-3");
+const leaderBoardList = document.querySelector("#leaderBoard");
 
 //retrieving token from local storage
 const token = localStorage.getItem("token");
-
 //user not logged in
 if (!token) {
   window.location.href = "login.html";
@@ -17,6 +20,28 @@ if (!token) {
 console.log(token);
 axios.defaults.headers.common["Authorization"] = `${token}`;
 
+async function getPremiumStatus() {
+  try {
+    const premiumStatus = await axios.get(
+      "http://localhost:3000/purchase/checkpremium"
+    );
+    premiumUser.innerHTML = "<span>You are premium user now</span>";
+    // Create the leaderboard button
+    const leaderBoardBtn = document.createElement("button");
+    leaderBoardBtn.classList.add("btn", "btn-outline-primary");
+    leaderBoardBtn.textContent = "Leaderboard";
+    leaderBoardBtn.addEventListener("click", leaderBoard);
+
+    // Append the button after premiumUser element
+    divForleaderboardBtn.appendChild(leaderBoardBtn);
+  } catch (err) {
+    premiumUser.innerHTML = "";
+  }
+}
+getPremiumStatus();
+
+// listen to click on logoutBtn
+logoutBtn.addEventListener("click", logout);
 // listen to click on rzpBtn
 rzpBtn.addEventListener("click", payments);
 // Listen for form submit
@@ -143,11 +168,27 @@ async function payments(e) {
     key: response.data.key_id,
     order_id: response.data.order.id,
     handler: async function (response) {
-      axios.post("http://localhost:3000/purchase/updatetransactionstatus", {
-        order_id: options.order_id,
-        payment_id: response.razorpay_payment_id,
-      });
+      await axios.post(
+        "http://localhost:3000/purchase/updatetransactionstatus",
+        {
+          order_id: options.order_id,
+          payment_id: response.razorpay_payment_id,
+        }
+      );
       alert("you are a premium user now");
+      premiumUser.innerHTML = "<span>You are premium user now</span>";
+    },
+    modal: {
+      ondismiss: async function () {
+        console.log("Payment failed or dismissed");
+        alert("Payment failed or dismissed");
+        await axios.post(
+          "http://localhost:3000/purchase/failedtransactionstatus",
+          {
+            order_id: options.order_id,
+          }
+        );
+      },
     },
   };
   const rzpl = new Razorpay(options);
@@ -158,4 +199,38 @@ async function payments(e) {
     console.log(response);
     alert("Something went wrong");
   });
+}
+
+//logout function
+function logout() {
+  axios.defaults.headers.common["Authorization"] = `${token}`;
+  localStorage.removeItem("token");
+  alert("You are logged out successfully");
+  window.location.href = "login.html";
+}
+
+async function leaderBoard() {
+  try {
+    const response = await axios.get(
+      "http://localhost:3000/purchase/getleaderboard"
+    );
+    const userExpenses = response.data;
+    console.log(userExpenses);
+    for (let i = 0; i < userExpenses.length; i++)
+      showLeaderBoard(userExpenses[i]);
+  } catch (error) {
+    console.error("Error fetching user expenses:", error);
+  }
+}
+
+function showLeaderBoard(userExpense) {
+  const li = document.createElement("li");
+  li.appendChild(
+    document.createTextNode(
+      `Name - ${userExpense.user.name} -- Total Expenses - ${userExpense.totalExpenses}`
+    )
+  );
+  leaderBoardList.appendChild(li);
+
+  expenseList.appendChild(li);
 }

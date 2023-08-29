@@ -13,4 +13,16 @@ router.post(
   purchaseController.updatetransactionstatus
 );
 
+// purchase/failedtransactionstatus => POST
+router.post(
+  "/failedtransactionstatus",
+  purchaseController.failedtransactionstatus
+);
+
+// /purchase/checkpremium => GET
+router.get("/checkpremium", purchaseController.checkPremium);
+
+// /purchase/getleaderboard =>
+router.get("/getleaderboard", purchaseController.getLeaderBoard);
+
 module.exports = router;

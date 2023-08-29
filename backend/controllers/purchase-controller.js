@@ -1,5 +1,8 @@
 const Razorpay = require("razorpay");
 const Order = require("../models/order");
+const Expense = require("../models/expense");
+const User = require("../models/user");
+const sequelize = require("../util/database");
 
 exports.purchasePremium = async (req, res, next) => {
   try {
@@ -34,7 +37,6 @@ exports.updatetransactionstatus = async (req, res, next) => {
       where: { orderid: req.body.order_id },
     });
     const order = orders[0];
-    order.orderid = req.body.order_id;
     order.paymentid = req.body.payment_id;
     order.status = "SUCCESS";
     order.save();
@@ -44,5 +46,52 @@ exports.updatetransactionstatus = async (req, res, next) => {
   } catch (err) {
     console.log(err);
     res.status(403).json({ message: "Something went wrong", error: err });
+  }
+};
+
+exports.failedtransactionstatus = async (req, res, next) => {
+  try {
+    const orders = await req.user.getOrders({
+      where: { orderid: req.body.order_id },
+    });
+    const order = orders[0];
+    order.status = "FAILED";
+    order.save();
+    req.user.ispremium = true;
+    req.user.save();
+    res.status(400).json({ message: "payment failed" });
+  } catch (err) {
+    console.log(err);
+    res.status(403).json({ message: "Something went wrong", error: err });
+  }
+};
+
+exports.checkPremium = async (req, res, next) => {
+  if (req.user.ispremium) {
+    res.status(200).json({ message: "premium user" });
+  } else {
+    res.status(404).json({ message: "not premium user" });
+  }
+};
+
+exports.getLeaderBoard = async (req, res, next) => {
+  try {
+    const expenses = await Expense.findAll({
+      attributes: [
+        [sequelize.fn("SUM", sequelize.col("expense")), "totalExpenses"],
+        "userId",
+      ],
+      include: [
+        {
+          model: User,
+          attributes: ["name"],
+        },
+      ],
+      group: ["userId"],
+    });
+    res.status(200).json(expenses);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 };
