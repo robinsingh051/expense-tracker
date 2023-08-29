@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const secretKey = "yourSecretKey";
+const nodemailer = require("nodemailer");
 
 const User = require("../models/user");
 const sequelize = require("../util/database");
@@ -60,4 +61,40 @@ exports.getUser = async (req, res, next) => {
     console.error(err);
     return res.status(500).json({ error: "An error occurred" });
   }
+};
+
+exports.forgetpassword = async (req, res, next) => {
+  const email = req.body.email;
+  console.log(email);
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: "baskin.notif@gmail.com",
+      pass: "kgjtkdyobgffnqjg",
+      authMethod: "LOGIN",
+    },
+  });
+  const mailConfirm = {
+    from: "baskin.notif@gmail.com",
+    to: email,
+    subject: "Change your password",
+    html: `
+      <html>
+        <head>
+        </head>
+        <body>
+          <p>He He He</p>
+        </body>
+      </html>  `,
+  };
+  transporter.sendMail(mailConfirm, (err, info) => {
+    if (err) {
+      console.log(err);
+      res.status(400).json({ message: "failed" });
+    } else {
+      res.status(200).json({ message: "success" });
+    }
+  });
 };
