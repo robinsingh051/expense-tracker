@@ -265,11 +265,26 @@ async function download() {
   }
 }
 
+// showfilesBtn.addEventListener("click", async () => {
+//   try {
+//     const response = await axios.get("http://localhost:3000/users/getfiles");
+//     const files = response.data;
+//     console.log(files);
+//   } catch (error) {
+//     console.error("Error fetching files:", error);
+//   }
+// });
+
+let currentPage = 1; // Initialize current page
+
 showfilesBtn.addEventListener("click", async () => {
   try {
-    const response = await axios.get("http://localhost:3000/users/getfiles");
+    const response = await axios.get(
+      `http://localhost:3000/users/getfiles?page=${currentPage}`
+    );
     const files = response.data;
     console.log(files);
+
     const tableBody = document.getElementById("fileTableBody");
     tableBody.innerHTML = "";
 
@@ -303,6 +318,31 @@ showfilesBtn.addEventListener("click", async () => {
       tableBody.appendChild(row);
     });
 
+    // Add previous and next buttons for pagination
+    fileTableContainer.classList.add("pagination");
+
+    const prevButton = document.createElement("button");
+    prevButton.textContent = "Previous";
+    prevButton.classList.add("btn", "btn-secondary", "btn-sm");
+    prevButton.disabled = currentPage === 1;
+    prevButton.addEventListener("click", () => {
+      if (currentPage > 1) {
+        currentPage--;
+        updateFilesTable();
+      }
+    });
+
+    const nextButton = document.createElement("button");
+    nextButton.textContent = "Next";
+    nextButton.classList.add("btn", "btn-secondary", "btn-sm");
+    nextButton.disabled = files.length < 5; // Assuming 5 files per page
+    nextButton.addEventListener("click", () => {
+      currentPage++;
+      updateFilesTable();
+    });
+
+    fileTableContainer.appendChild(prevButton);
+    fileTableContainer.appendChild(nextButton);
     const hr = document.createElement("hr");
     fileTableContainer.parentNode.insertBefore(hr, fileTableContainer);
     fileTableContainer.style.display = "block";
@@ -311,3 +351,83 @@ showfilesBtn.addEventListener("click", async () => {
     console.error("Error fetching files:", error);
   }
 });
+
+async function updateFilesTable() {
+  try {
+    const response = await axios.get(
+      `http://localhost:3000/users/getfiles?page=${currentPage}`
+    );
+    const files = response.data;
+    console.log(files);
+
+    // Clear previous table and populate with new files
+    const tableBody = document.getElementById("fileTableBody");
+    tableBody.innerHTML = "";
+
+    files.forEach((file) => {
+      const row = document.createElement("tr");
+      const idCell = document.createElement("td");
+      const downloadCell = document.createElement("td");
+      const downloadButton = document.createElement("button");
+
+      idCell.textContent = file.id;
+      idCell.classList.add("align-middle"); // Add Bootstrap class for vertical alignment
+
+      // Create a Bootstrap-styled button
+      downloadButton.textContent = "Download";
+      downloadButton.classList.add("btn", "btn-primary", "btn-sm"); // Add Bootstrap button classes
+
+      // Create an anchor element for download
+      const downloadLink = document.createElement("a");
+      downloadLink.href = file.location;
+      downloadLink.download = "myexpense.csv";
+      downloadLink.textContent = "Download";
+      downloadLink.classList.add("btn", "btn-success", "btn-sm"); // Add Bootstrap button classes
+
+      downloadButton.addEventListener("click", (event) => {
+        downloadLink.click();
+      });
+
+      downloadCell.appendChild(downloadButton);
+      row.appendChild(idCell);
+      row.appendChild(downloadCell);
+      tableBody.appendChild(row);
+    });
+
+    // Update pagination buttons
+    prevButton.disabled = currentPage === 1;
+    nextButton.disabled = files.length < 5;
+
+    // Add previous and next buttons for pagination
+    fileTableContainer.classList.add("pagination");
+
+    const prevButton = document.createElement("button");
+    prevButton.textContent = "Previous";
+    prevButton.classList.add("btn", "btn-secondary", "btn-sm");
+    prevButton.disabled = currentPage === 1;
+    prevButton.addEventListener("click", () => {
+      if (currentPage > 1) {
+        currentPage--;
+        updateFilesTable();
+      }
+    });
+
+    const nextButton = document.createElement("button");
+    nextButton.textContent = "Next";
+    nextButton.classList.add("btn", "btn-secondary", "btn-sm");
+    nextButton.disabled = files.length < 5; // Assuming 10 files per page
+    nextButton.addEventListener("click", () => {
+      currentPage++;
+      updateFilesTable();
+    });
+
+    fileTableContainer.appendChild(prevButton);
+    fileTableContainer.appendChild(nextButton);
+    const hr = document.createElement("hr");
+    fileTableContainer.parentNode.insertBefore(hr, fileTableContainer);
+    fileTableContainer.style.display = "block";
+    fileTableContainer.style.paddingLeft = "2rem";
+  } catch (error) {
+    console.error("Error fetching files:", error);
+  }
+}
