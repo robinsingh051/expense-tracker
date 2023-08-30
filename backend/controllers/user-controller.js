@@ -114,12 +114,21 @@ exports.download = async (req, res, next) => {
 
 exports.getFiles = async (req, res, next) => {
   try {
-    const files = await DownloadedFile.findAll({
+    const page = req.query.page || 1;
+    const limit = 5; // Number of files per page
+    const offset = (page - 1) * limit;
+
+    const files = await DownloadedFile.findAndCountAll({
       where: { userId: req.user.id },
+      limit: limit,
+      offset: offset,
     });
-    console.log(files);
-    res.status(200).json(files);
+
+    console.log(files.rows); // Contains the files for the current page
+    const totalFiles = files.count;
+
+    res.status(200).json({ files: files.rows, totalFiles });
   } catch (err) {
-    res.status(500).json({ err });
+    res.status(500).json({ error: "An error occurred" });
   }
 };

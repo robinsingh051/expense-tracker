@@ -282,8 +282,9 @@ showfilesBtn.addEventListener("click", async () => {
     const response = await axios.get(
       `http://localhost:3000/users/getfiles?page=${currentPage}`
     );
-    const files = response.data;
-    console.log(files);
+    const files = response.data.files;
+    const count = response.data.totalFiles;
+    console.log(files, count);
 
     const tableBody = document.getElementById("fileTableBody");
     tableBody.innerHTML = "";
@@ -357,8 +358,18 @@ async function updateFilesTable() {
     const response = await axios.get(
       `http://localhost:3000/users/getfiles?page=${currentPage}`
     );
-    const files = response.data;
+    const files = response.data.files;
     console.log(files);
+
+    let i = 2;
+    while (i != 0) {
+      const lastChild = fileTableContainer.lastElementChild;
+      if (lastChild) {
+        // Remove the last child element
+        fileTableContainer.removeChild(lastChild);
+      }
+      i--;
+    }
 
     // Clear previous table and populate with new files
     const tableBody = document.getElementById("fileTableBody");
@@ -394,10 +405,6 @@ async function updateFilesTable() {
       tableBody.appendChild(row);
     });
 
-    // Update pagination buttons
-    prevButton.disabled = currentPage === 1;
-    nextButton.disabled = files.length < 5;
-
     // Add previous and next buttons for pagination
     fileTableContainer.classList.add("pagination");
 
@@ -421,10 +428,12 @@ async function updateFilesTable() {
       updateFilesTable();
     });
 
+    // Update pagination buttons
+    prevButton.disabled = currentPage === 1;
+    nextButton.disabled = files.length < 5;
+
     fileTableContainer.appendChild(prevButton);
     fileTableContainer.appendChild(nextButton);
-    const hr = document.createElement("hr");
-    fileTableContainer.parentNode.insertBefore(hr, fileTableContainer);
     fileTableContainer.style.display = "block";
     fileTableContainer.style.paddingLeft = "2rem";
   } catch (error) {
