@@ -18,8 +18,17 @@
           <li class="bg-dark text-light" id="premiumUser"></li>
         </ul>
         <div class="mr-2">
-          <button onclick="download()" id="downloadexpense">
-            Download File
+          <button class="btn btn-outline-info" id="fetchfiles">
+            Show All Reports
+          </button>
+        </div>
+        <div class="mr-2">
+          <button
+            onclick="download()"
+            id="downloadexpense"
+            class="btn btn-outline-success"
+          >
+            Download Report
           </button>
         </div>
         <div class="mr-3"></div>
@@ -28,7 +37,7 @@
             Buy Premium
           </button>
         </div>
-        <div class="inline my-2 my-lg-0 mr-3">
+        <div class="mr-3">
           <button
             class="btn btn-outline-light my-2 my-sm-0 mr-5"
             id="logoutBtn"
@@ -64,12 +73,26 @@
         <input class="btn btn-info mt-5" type="submit" value="Submit" />
       </form>
     </section>
+    <hr />
     <div>
       <ul id="expenses"></ul>
     </div>
-    <hr />
     <div>
       <ul id="leaderBoard"></ul>
+    </div>
+    <div>
+      <ul id="showfiles"></ul>
+    </div>
+    <div id="fileTableContainer" style="display: none">
+      <table>
+        <thead>
+          <tr>
+            <th>File ID</th>
+            <th>Download</th>
+          </tr>
+        </thead>
+        <tbody id="fileTableBody"></tbody>
+      </table>
     </div>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>

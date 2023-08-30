@@ -17,4 +17,7 @@ router.post("/forgetpassword", userController.forgetpassword);
 // users/download => GET
 router.get("/download", authenticationMiddleware, userController.download);
 
+// users/getfiles => GET
+router.get("/getfiles", authenticationMiddleware, userController.getFiles);
+
 module.exports = router;

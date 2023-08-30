@@ -10,6 +10,8 @@ const rzpBtn = document.querySelector("#rzp-button");
 const logoutBtn = document.querySelector("#logoutBtn");
 const divForleaderboardBtn = document.querySelector(".mr-3");
 const downloadBtn = document.querySelector("#downloadexpense");
+const showfilesBtn = document.querySelector("#fetchfiles");
+const fileTableContainer = document.getElementById("fileTableContainer");
 
 //retrieving token from local storage
 const token = localStorage.getItem("token");
@@ -37,6 +39,7 @@ async function getPremiumStatus() {
     // remove buy premium button
     rzpBtn.remove();
   } catch (err) {
+    showfilesBtn.remove();
     downloadBtn.remove();
     premiumUser.innerHTML = "";
   }
@@ -90,11 +93,11 @@ function showData(obj) {
   li.id = obj.id;
 
   const delBtn = document.createElement("button");
-  delBtn.classList.add("btn", "btn-danger", "del");
+  delBtn.classList.add("btn", "btn-outline-danger", "del");
   delBtn.appendChild(document.createTextNode("Delete"));
 
   const editBtn = document.createElement("button");
-  editBtn.classList.add("btn", "btn-warning", "edit");
+  editBtn.classList.add("btn", "btn-outline-warning", "edit");
   editBtn.appendChild(document.createTextNode("Edit"));
 
   li.appendChild(
@@ -221,6 +224,11 @@ async function leaderBoard() {
     const userExpenses = response.data;
     console.log(userExpenses);
     const leaderBoardList = document.querySelector("#leaderBoard");
+    const hr = document.createElement("hr");
+    leaderBoardList.parentNode.parentNode.insertBefore(
+      hr,
+      leaderBoardList.parentNode
+    );
     leaderBoardList.innerHTML = "";
     for (let i = 0; i < userExpenses.length; i++)
       showLeaderBoard(leaderBoardList, userExpenses[i]);
@@ -241,8 +249,8 @@ function showLeaderBoard(leaderBoardList, userExpense) {
 
 async function download() {
   try {
-    const response = await axios.get("http://localhost:3000/user/download");
-    if (response.status === 201) {
+    const response = await axios.get("http://localhost:3000/users/download");
+    if (response.status === 200) {
       // The backend is sending a download link
       // which if we open in the browser, the file would download
       const a = document.createElement("a");
@@ -250,9 +258,56 @@ async function download() {
       a.download = "myexpense.csv";
       a.click();
     } else {
-      throw new Error(response.data.message);
+      throw new Error(response.data.error);
     }
   } catch (err) {
     console.log(err);
   }
 }
+
+showfilesBtn.addEventListener("click", async () => {
+  try {
+    const response = await axios.get("http://localhost:3000/users/getfiles");
+    const files = response.data;
+    console.log(files);
+    const tableBody = document.getElementById("fileTableBody");
+    tableBody.innerHTML = "";
+
+    files.forEach((file) => {
+      const row = document.createElement("tr");
+      const idCell = document.createElement("td");
+      const downloadCell = document.createElement("td");
+      const downloadButton = document.createElement("button");
+
+      idCell.textContent = file.id;
+      idCell.classList.add("align-middle"); // Add Bootstrap class for vertical alignment
+
+      // Create a Bootstrap-styled button
+      downloadButton.textContent = "Download";
+      downloadButton.classList.add("btn", "btn-primary", "btn-sm"); // Add Bootstrap button classes
+
+      // Create an anchor element for download
+      const downloadLink = document.createElement("a");
+      downloadLink.href = file.location;
+      downloadLink.download = "myexpense.csv";
+      downloadLink.textContent = "Download";
+      downloadLink.classList.add("btn", "btn-success", "btn-sm"); // Add Bootstrap button classes
+
+      downloadButton.addEventListener("click", (event) => {
+        downloadLink.click();
+      });
+
+      downloadCell.appendChild(downloadButton);
+      row.appendChild(idCell);
+      row.appendChild(downloadCell);
+      tableBody.appendChild(row);
+    });
+
+    const hr = document.createElement("hr");
+    fileTableContainer.parentNode.insertBefore(hr, fileTableContainer);
+    fileTableContainer.style.display = "block";
+    fileTableContainer.style.paddingLeft = "2rem";
+  } catch (error) {
+    console.error("Error fetching files:", error);
+  }
+});
