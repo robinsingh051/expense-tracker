@@ -1,6 +1,5 @@
 // Put DOM elements into variables
 const myForm = document.querySelector("#my-form");
-const nameInput = document.querySelector("#name");
 const emailInput = document.querySelector("#email");
 const passwordInput = document.querySelector("#password");
 const msg = document.querySelector(".msg");
@@ -14,11 +13,7 @@ myForm.addEventListener("submit", onSubmit);
 
 async function onSubmit(e) {
   e.preventDefault();
-  if (
-    nameInput.value === "" ||
-    emailInput.value === "" ||
-    passwordInput.value === ""
-  ) {
+  if (emailInput.value === "" || passwordInput.value === "") {
     msg.classList.add("error");
     msg.textContent = "Please enter all fields";
     setTimeout(() => {
@@ -27,40 +22,39 @@ async function onSubmit(e) {
     }, 2000);
   } else {
     // Create new details object
-    const newDetails = {
-      name: nameInput.value,
+    const userDetails = {
       email: emailInput.value,
       password: passwordInput.value,
     };
 
-    console.log(newDetails);
+    console.log(userDetails);
 
     try {
       // post to backend using axios
       const response = await axios.post(
-        "http://localhost:3000/users/signUp",
-        newDetails
+        "http://localhost:3000/users/logIn",
+        userDetails
       );
       console.log(response.data);
+
+      //storing token to local storage
+      localStorage.setItem("token", response.data.token);
+
       // Clear fields
-      nameInput.value = "";
       emailInput.value = "";
       passwordInput.value = "";
-
+      window.location.href = "expense.html";
     } catch (err) {
-      msg.classList.add("error");
-      msg.textContent = "User already exists";
-      setTimeout(() => {
-        msg.textContent = "";
-        msg.remove();
-      window.location.href = "login.html";
-    } catch (err) {
-      msg.classList.add("error");
-      msg.textContent = "User Already exists";
+      if (err.response.status === 404) {
+        msg.classList.add("error");
+        msg.textContent = "User doesn't exist";
+      } else if (err.response.status === 401) {
+        msg.classList.add("error");
+        msg.textContent = "Incorrect password";
+      }
       setTimeout(() => {
         msg.textContent = "";
         msg.classList.remove("error");
-
       }, 2000);
     }
   }
