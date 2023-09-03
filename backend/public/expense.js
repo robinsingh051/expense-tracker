@@ -290,6 +290,18 @@ showfilesBtn.addEventListener("click", async () => {
     const files = response.data.files;
     const count = response.data.totalFiles;
     console.log(files, count);
+    const childCount = fileTableContainer.children.length;
+    if (childCount == 3) {
+      let i = 2;
+      while (i != 0) {
+        const lastChild = fileTableContainer.lastElementChild;
+        if (lastChild) {
+          // Remove the last child element
+          fileTableContainer.removeChild(lastChild);
+        }
+        i--;
+      }
+    }
 
     const tableBody = document.getElementById("fileTableBody");
     tableBody.innerHTML = "";
