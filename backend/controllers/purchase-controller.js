@@ -3,6 +3,7 @@ const Order = require("../models/order");
 const Expense = require("../models/expense");
 const User = require("../models/user");
 const sequelize = require("../util/database");
+const { CostExplorer } = require("aws-sdk");
 
 exports.purchasePremium = async (req, res, next) => {
   try {
@@ -32,6 +33,7 @@ exports.purchasePremium = async (req, res, next) => {
 };
 
 exports.updatetransactionstatus = async (req, res, next) => {
+  console.log(req.user.id);
   const t = await sequelize.transaction();
   try {
     const orders = await req.user.getOrders({
@@ -40,9 +42,10 @@ exports.updatetransactionstatus = async (req, res, next) => {
     const order = orders[0];
     order.paymentid = req.body.payment_id;
     order.status = "SUCCESS";
-    order.save({ transaction: t });
+    console.log(order.id);
+    await order.save({ transaction: t });
     req.user.ispremium = true;
-    req.user.save({ transaction: t });
+    await req.user.save({ transaction: t });
     await t.commit();
     res.status(200).json({ message: "paymant successful" });
   } catch (err) {
@@ -60,9 +63,9 @@ exports.failedtransactionstatus = async (req, res, next) => {
     });
     const order = orders[0];
     order.status = "FAILED";
-    order.save({ transaction: t });
+    await order.save({ transaction: t });
     req.user.ispremium = false;
-    req.user.save({ transaction: t });
+    await req.user.save({ transaction: t });
     await t.commit();
     res.status(400).json({ message: "payment failed" });
   } catch (err) {

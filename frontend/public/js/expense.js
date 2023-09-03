@@ -184,6 +184,7 @@ async function payments(e) {
       alert("you are a premium user now");
       premiumUser.innerHTML = "<span>You are premium user now</span>";
       getPremiumStatus();
+      window.location.reload();
     },
     modal: {
       ondismiss: async function () {
