@@ -18,8 +18,6 @@ body {
 #expenses,
 #leaderBoard {
   list-style: none;
-  padding-left: 15rem;
-  width: 80%;
 }
 
 ul li {

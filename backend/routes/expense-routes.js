@@ -37,7 +37,7 @@ router.delete(
 // any route
 router.use((req, res) => {
   console.log(req.url);
-  res.sendFile(path.join(__dirname, "../public/${req.url}"));
+  res.sendFile(path.join(__dirname, `../public/${req.url}`));
 });
 
 module.exports = router;

@@ -4,7 +4,6 @@ const fs = require("fs");
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const helmet = require("helmet");
 const morgan = require("morgan");
 require("dotenv").config();
 
@@ -28,23 +27,12 @@ const accessLogStream = fs.createWriteStream(
   { flags: "a" }
 );
 
-app.use(helmet());
 app.use(morgan("combined", { stream: accessLogStream }));
 app.use(cors());
 app.use(bodyParser.json({ extended: false }));
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use((req, res, next) => {
-  res.setHeader(
-    "Content-Security-Policy",
-    "'self'",
-    "https://cdnjs.cloudflare.com",
-    "https://checkout.razorpay.com/v1/checkout.js",
-    "'unsafe-inline'"
-  );
-  next();
-});
+
 app.use(express.static(path.join(__dirname, "public")));
-app.use("/public/js", express.static(path.join(__dirname, "public/js")));
 
 app.use("/password", passwordRoutes);
 app.use("/users", userRoutes);
@@ -68,7 +56,7 @@ sequelize
   .sync()
   .then(() => {
     // Start the server
-    app.listen(process.env.PORT || 3000);
+    app.listen(process.env.PORT || 4000);
   })
   .catch((error) => {
     console.error(error);
