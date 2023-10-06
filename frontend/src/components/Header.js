@@ -40,6 +40,7 @@ const Header = (props) => {
           premium: true,
         }
       );
+      toast.success("You are a premium user now");
       dispatch(authActions.setPremium(true));
     } catch (err) {
       console.log(err);

@@ -1,5 +1,5 @@
 import React from "react";
-import { FaCheckCircle } from "react-icons/bs";
+import { FaCheckCircle } from "react-icons/fa";
 import { Image } from "react-bootstrap";
 import { useSelector } from "react-redux";
 
