@@ -27,23 +27,25 @@ function App() {
 
     const validateUser = async (token) => {
       if (token) {
+        console.log("inside if");
         try {
-          const { data } = await axios.post(
+          const res = await axios.post(
             `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${process.env.REACT_APP_API_KEY}`,
             { idToken: token }
           );
+          console.log(res);
           dispatch(
             authActions.login({
               token: token,
-              email: removeSpecialCharacters(data.users[0].email),
+              email: removeSpecialCharacters(res.data.users[0].email),
             })
           );
-          const res = await axios.get(
+          const response = await axios.get(
             `https://react-practice-9b982-default-rtdb.firebaseio.com/expenses/${removeSpecialCharacters(
-              data.users[0].email
+              res.data.users[0].email
             )}/premium.json`
           );
-          if (res.data) {
+          if (response.data) {
             dispatch(authActions.setPremium(true));
           }
           setLoading(false);
@@ -51,6 +53,8 @@ function App() {
           console.log(error);
           toast.error("something went wrong");
         }
+      } else {
+        setLoading(false);
       }
     };
     validateUser(token);
