@@ -20,7 +20,7 @@ exports.forgetpasswordmail = async (email, uuid) => {
             <head>
             </head>
             <body>
-              <p>http://localhost:3000/password/resestpassword/${uuid}</p>
+              <p>http://localhost:4000/password/resestpassword/${uuid}</p>
             </body>
           </html>  `,
   };

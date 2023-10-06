@@ -26,7 +26,7 @@ async function onSubmit(e) {
     try {
       // post to backend using axios
       const response = await axios.post(
-        "http://localhost:3000/users/forgetpassword",
+        "http://localhost:4000/users/forgetpassword",
         newDetails
       );
       console.log(response.data);

@@ -8,7 +8,7 @@ exports.sendForm = async (req, res, next) => {
   console.log(uuid);
   const forgetpasswordrequest = await ForgetPasswordRequest.findByPk(uuid);
   if (forgetpasswordrequest.isactive === true) {
-    res.send(`<form action="http://localhost:3000/password/resestpassword/${uuid}" method="POST">
+    res.send(`<form action="http://localhost:4000/password/resestpassword/${uuid}" method="POST">
     <label for="pass">New Password:</label>
     <input type="text" id="pass" name="pass">
     <button type="submit">Reset</button>`);
